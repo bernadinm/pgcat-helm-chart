@@ -1,0 +1,14 @@
+{{- if .Values.maxUnavailable -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pgcat.fullname" . }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "pgcat.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "pgcat.selectorLabels" . | nindent 6 }}
+  maxUnavailable: {{ .Values.maxUnavailable }}
+{{- end -}}
