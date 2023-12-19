@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "pgcat.configFile" . }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "pgcat.labels" . | nindent 4 }}
+data:
+  pgcat.toml: |-
+{{ include "pgcat.toml" . | indent 4 }}

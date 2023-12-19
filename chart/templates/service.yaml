@@ -1,0 +1,28 @@
+{{- if .Values.service.enabled  }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ default (include "pgcat.fullname" .) .Values.service.name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "pgcat.labels" . | nindent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.service.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "pgcat.selectorLabels" . | nindent 6 }}
+  ports:
+    - port: {{ .Values.servicePort }}
+      targetPort: {{ .Values.internalPort }}
+      protocol: TCP
+      name: pgcat
+    {{- if .Values.pgcatExporter.enabled }}
+    - port: {{ .Values.pgcatExporter.port }}
+      targetPort: http-metrics-pg
+      protocol: TCP
+      name: http-metrics-pg
+    {{- end }}
+{{- end }}
